@@ -53,11 +53,10 @@
       </closure>
     </binding>
     <binding name="translucent">
-      <closure type='gboolean' function='kgx_bool_and'>
+      <closure type='gboolean' function='kgx_double_gt_zero'>
         <lookup name="transparency">
           <lookup name="settings">KgxWindow</lookup>
         </lookup>
-        <lookup name="floating">KgxWindow</lookup>
       </closure>
     </binding>
     <signal name="notify::fullscreened" handler="fullscreened_changed" swapped="yes" />

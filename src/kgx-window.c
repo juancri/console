@@ -570,6 +570,7 @@ kgx_window_class_init (KgxWindowClass *klass)
   gtk_widget_class_bind_template_callback (widget_class, kgx_gtk_settings_for_display);
   gtk_widget_class_bind_template_callback (widget_class, kgx_text_or_fallback);
   gtk_widget_class_bind_template_callback (widget_class, kgx_bool_and);
+  gtk_widget_class_bind_template_callback (widget_class, kgx_double_gt_zero);
   gtk_widget_class_bind_template_callback (widget_class, kgx_format_percentage);
   gtk_widget_class_bind_template_callback (widget_class, kgx_decoration_layout_is_inverted);
   gtk_widget_class_bind_template_callback (widget_class, kgx_file_as_subtitle);

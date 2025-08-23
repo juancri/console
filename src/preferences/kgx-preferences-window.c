@@ -40,6 +40,9 @@ struct _KgxPreferencesWindow {
   GtkWidget            *custom_font;
   GtkWidget            *unlimited_scrollback;
   GtkWidget            *scrollback;
+  GtkWidget            *enable_transparency;
+  GtkWidget            *transparency_scale;
+  GtkAdjustment        *transparency_adjustment;
 };
 
 
@@ -130,6 +133,66 @@ font_as_label (GObject              *object,
 }
 
 
+static gboolean
+kgx_settings_transparency_to_boolean (GBinding     *binding,
+                                      const GValue *from_value,
+                                      GValue       *to_value,
+                                      gpointer      user_data)
+{
+  double transparency = g_value_get_double (from_value);
+  g_value_set_boolean (to_value, transparency > 0.0);
+  return TRUE;
+}
+
+
+static gboolean
+kgx_settings_boolean_to_transparency (GBinding     *binding,
+                                      const GValue *from_value,
+                                      GValue       *to_value,
+                                      gpointer      user_data)
+{
+  KgxPreferencesWindow *window = KGX_PREFERENCES_WINDOW (user_data);
+  gboolean enabled = g_value_get_boolean (from_value);
+  if (enabled) {
+    /* Use a default transparency level when enabling */
+    double percentage = gtk_adjustment_get_value (window->transparency_adjustment);
+    if (percentage == 0.0) {
+      /* Set a default value if slider is at 0 */
+      gtk_adjustment_set_value (window->transparency_adjustment, 20.0);
+      percentage = 20.0;
+    }
+    g_value_set_double (to_value, percentage / 100.0);
+  } else {
+    g_value_set_double (to_value, 0.0);
+  }
+  return TRUE;
+}
+
+
+static gboolean
+kgx_settings_transparency_to_percentage (GBinding     *binding,
+                                         const GValue *from_value,
+                                         GValue       *to_value,
+                                         gpointer      user_data)
+{
+  double transparency = g_value_get_double (from_value);
+  g_value_set_double (to_value, transparency * 100.0);
+  return TRUE;
+}
+
+
+static gboolean
+kgx_settings_percentage_to_transparency (GBinding     *binding,
+                                         const GValue *from_value,
+                                         GValue       *to_value,
+                                         gpointer      user_data)
+{
+  double percentage = g_value_get_double (from_value);
+  g_value_set_double (to_value, percentage / 100.0);
+  return TRUE;
+}
+
+
 static void
 font_selected (KgxFontPicker        *picker,
                PangoFontDescription *font,
@@ -190,6 +253,9 @@ kgx_preferences_window_class_init (KgxPreferencesWindowClass *klass)
   gtk_widget_class_bind_template_child (widget_class, KgxPreferencesWindow, custom_font);
   gtk_widget_class_bind_template_child (widget_class, KgxPreferencesWindow, unlimited_scrollback);
   gtk_widget_class_bind_template_child (widget_class, KgxPreferencesWindow, scrollback);
+  gtk_widget_class_bind_template_child (widget_class, KgxPreferencesWindow, enable_transparency);
+  gtk_widget_class_bind_template_child (widget_class, KgxPreferencesWindow, transparency_scale);
+  gtk_widget_class_bind_template_child (widget_class, KgxPreferencesWindow, transparency_adjustment);
 
   gtk_widget_class_bind_template_callback (widget_class, font_as_attributes);
   gtk_widget_class_bind_template_callback (widget_class, font_as_label);
@@ -277,4 +343,18 @@ kgx_preferences_window_init (KgxPreferencesWindow *self)
                         self->scrollback, "value",
                         G_BINDING_SYNC_CREATE | G_BINDING_BIDIRECTIONAL);
 
+  /* Bind transparency controls */
+  g_binding_group_bind_full (self->settings_binds, "transparency",
+                             self->enable_transparency, "active",
+                             G_BINDING_SYNC_CREATE | G_BINDING_BIDIRECTIONAL,
+                             kgx_settings_transparency_to_boolean,
+                             kgx_settings_boolean_to_transparency,
+                             self, NULL);
+  
+  g_binding_group_bind_full (self->settings_binds, "transparency",
+                             self->transparency_adjustment, "value",
+                             G_BINDING_SYNC_CREATE | G_BINDING_BIDIRECTIONAL,
+                             kgx_settings_transparency_to_percentage,
+                             kgx_settings_percentage_to_transparency,
+                             NULL, NULL);
 }

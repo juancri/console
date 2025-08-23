@@ -184,6 +184,36 @@ kgx_set_str_prop (GObject       *restrict object,
 
 
 /**
+ * kgx_set_double_prop:
+ * @object: the #GObject the property is on
+ * @pspec: the #GParamSpec being set
+ * @target: the storage on @object for @pspec
+ * @value: the potential new value for @target
+ *
+ * Update a double property, notifying if the value changed
+ *
+ * Returns: %TRUE if the value changed, otherwise %FALSE
+ */
+static inline gboolean
+kgx_set_double_prop (GObject      *restrict object,
+                     GParamSpec   *restrict pspec,
+                     double       *restrict target,
+                     const GValue *restrict value)
+{
+  double new_value = g_value_get_double (value);
+
+  if (*target == new_value) {
+    return FALSE;
+  }
+
+  *target = new_value;
+  g_object_notify_by_pspec (object, pspec);
+
+  return TRUE;
+}
+
+
+/**
  * kgx_set_flags_prop:
  * @object: the #GObject the property is on
  * @pspec: the #GParamSpec being set

@@ -390,17 +390,23 @@ kgx_livery_export_to_finish (KgxLivery     *self,
 
 
 static inline KgxPalette *
-maybe_as_opaque (KgxPalette  *base,
-                 KgxPalette **cache,
-                 gboolean     translucency)
+maybe_with_transparency (KgxPalette  *base,
+                        KgxPalette **cache,
+                        double       transparency)
 {
-  if (G_LIKELY (!translucency)) {
+  if (G_LIKELY (transparency <= 0.0)) {
     if (G_UNLIKELY (*cache == NULL)) {
       *cache = kgx_palette_as_opaque (base);
     }
     return kgx_palette_ref (*cache);
   } else {
-    return kgx_palette_ref (base);
+    /* Create a new palette with the specified transparency */
+    GdkRGBA fg, bg;
+    const GdkRGBA *colours;
+    size_t n_colours;
+    
+    kgx_palette_get_colours (base, &fg, &bg, &n_colours, &colours);
+    return kgx_palette_new (&fg, &bg, transparency, n_colours, colours);
   }
 }
 
@@ -413,13 +419,13 @@ maybe_as_opaque (KgxPalette  *base,
 KgxPalette *
 kgx_livery_resolve (KgxLivery     *self,
                     gboolean       is_day,
-                    gboolean       translucency)
+                    double         transparency)
 {
   g_return_val_if_fail (self != NULL, NULL);
 
   if (is_day && self->day) {
-    return maybe_as_opaque (self->day, &self->day_opaque, translucency);
+    return maybe_with_transparency (self->day, &self->day_opaque, transparency);
   } else {
-    return maybe_as_opaque (self->night, &self->night_opaque, translucency);
+    return maybe_with_transparency (self->night, &self->night_opaque, transparency);
   }
 }

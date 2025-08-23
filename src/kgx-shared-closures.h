@@ -110,6 +110,15 @@ kgx_bool_and (G_GNUC_UNUSED GObject *self,
 
 
 G_GNUC_UNUSED
+static gboolean
+kgx_double_gt_zero (G_GNUC_UNUSED GObject *self,
+                    double                 value)
+{
+  return value > 0.0;
+}
+
+
+G_GNUC_UNUSED
 static char *
 kgx_format_percentage (G_GNUC_UNUSED GObject *object, double scale)
 {

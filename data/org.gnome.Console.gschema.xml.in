@@ -49,8 +49,9 @@
     <key name="software-flow-control" type="b">
       <default>false</default>
     </key>
-    <key name="transparency" type="b">
-      <default>false</default>
+    <key name="transparency" type="d">
+      <range min="0.0" max="1.0"/>
+      <default>0.0</default>
     </key>
     <key name="livery" type="s">
       <default>@KGX_LIVERY_UUID_KGX@</default>

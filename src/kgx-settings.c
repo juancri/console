@@ -53,7 +53,7 @@ struct _KgxSettings {
   gboolean              ignore_scrollback_limit;
   gboolean              software_flow_control;
   KgxLivery            *livery;
-  gboolean              transparency;
+  double                transparency;
 
   KgxLiveryManager     *livery_manager;
 
@@ -183,7 +183,7 @@ kgx_settings_set_property (GObject      *object,
                             value);
       break;
     case PROP_TRANSPARENCY:
-      kgx_set_boolean_prop (object,
+      kgx_set_double_prop (object,
                             pspec,
                             &self->transparency,
                             value);
@@ -248,7 +248,7 @@ kgx_settings_get_property (GObject    *object,
       g_value_set_boxed (value, kgx_settings_get_livery (self));
       break;
     case PROP_TRANSPARENCY:
-      g_value_set_boolean (value, self->transparency);
+      g_value_set_double (value, self->transparency);
       break;
     KGX_INVALID_PROP (object, property_id, pspec);
   }
@@ -374,9 +374,9 @@ kgx_settings_class_init (KgxSettingsClass *klass)
                         G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
   pspecs[PROP_TRANSPARENCY] =
-    g_param_spec_boolean ("transparency", NULL, NULL,
-                          FALSE,
-                          G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+    g_param_spec_double ("transparency", NULL, NULL,
+                         0.0, 1.0, 0.0,
+                         G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
   g_object_class_install_properties (object_class, LAST_PROP, pspecs);
 
