@@ -687,17 +687,66 @@ kgx_window_init (KgxWindow *self)
  *
  * Returns: (transfer full):
  */
+static GFile *
+get_process_working_directory (GPid pid)
+{
+  g_autofree char *cwd_link = NULL;
+  g_autofree char *cwd_path = NULL;
+  GError *error = NULL;
+  
+  if (pid <= 0) {
+    return NULL;
+  }
+  
+  cwd_link = g_strdup_printf ("/proc/%d/cwd", (int) pid);
+  cwd_path = g_file_read_link (cwd_link, &error);
+  
+  if (error) {
+    g_debug ("Failed to read process %d cwd: %s", (int) pid, error->message);
+    g_error_free (error);
+    return NULL;
+  }
+  
+  if (cwd_path) {
+    return g_file_new_for_path (cwd_path);
+  }
+  
+  return NULL;
+}
+
 GFile *
 kgx_window_get_working_dir (KgxWindow *self)
 {
   KgxWindowPrivate *priv;
   GFile *file = NULL;
+  KgxTab *active_tab = NULL;
 
   g_return_val_if_fail (KGX_IS_WINDOW (self), NULL);
 
   priv = kgx_window_get_instance_private (self);
 
+  /* First try the cached path from the pages */
   g_object_get (priv->pages, "path", &file, NULL);
+  
+  if (file) {
+    return file;
+  }
+
+  /* If no cached path, get current directory directly from active tab's process */
+  g_object_get (priv->pages, "active-page", &active_tab, NULL);
+  
+  if (active_tab) {
+    KgxTrain *train = NULL;
+    g_object_get (active_tab, "train", &train, NULL);
+    
+    if (train) {
+      GPid shell_pid = kgx_train_get_pid (train);
+      file = get_process_working_directory (shell_pid);
+      g_object_unref (train);
+    }
+    
+    g_object_unref (active_tab);
+  }
 
   return file;
 }

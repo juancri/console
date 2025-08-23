@@ -970,6 +970,14 @@ bell (KgxTerminal *term,
 }
 
 
+
+
+
+
+
+
+
+
 static void
 kgx_tab_init (KgxTab *self)
 {
