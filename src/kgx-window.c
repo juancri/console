@@ -235,6 +235,13 @@ and (KgxWindow *self, gboolean a, gboolean b)
 }
 
 
+static gboolean
+transparency_and_floating (KgxWindow *self, int transparency, gboolean floating)
+{
+  return transparency > 0 && floating;
+}
+
+
 static void
 zoom (KgxPages  *pages,
       KgxZoom    dir,
@@ -655,6 +662,7 @@ kgx_window_class_init (KgxWindowClass *klass)
   gtk_widget_class_bind_template_child_private (widget_class, KgxWindow, surface_binds);
 
   gtk_widget_class_bind_template_callback (widget_class, and);
+  gtk_widget_class_bind_template_callback (widget_class, transparency_and_floating);
   gtk_widget_class_bind_template_callback (widget_class, zoom);
   gtk_widget_class_bind_template_callback (widget_class, create_tearoff_host);
   gtk_widget_class_bind_template_callback (widget_class, maybe_close_window);

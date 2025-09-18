@@ -84,10 +84,8 @@
           </closure>
           <constant type="KgxTheme">day</constant>
         </closure>
-        <!-- I don't love that we are reaching all the way up to KgxWindow
-             like this, but I can't figure out anything cleaner -->
-        <lookup name="translucent" type="KgxWindow">
-          <lookup name="root">KgxTerminal</lookup>
+        <lookup name="transparency">
+          <lookup name="settings">KgxTerminal</lookup>
         </lookup>
       </closure>
     </binding>

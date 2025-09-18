@@ -423,3 +423,46 @@ kgx_livery_resolve (KgxLivery     *self,
     return maybe_as_opaque (self->night, &self->night_opaque, translucency);
   }
 }
+
+
+/**
+ * kgx_livery_resolve_with_transparency:
+ * @self: a #KgxLivery
+ * @is_day: whether to use day theme
+ * @transparency_percent: transparency percentage (0-100)
+ *
+ * Returns: (transfer full): a #KgxPalette with the specified transparency
+ */
+KgxPalette *
+kgx_livery_resolve_with_transparency (KgxLivery *self,
+                                      gboolean   is_day,
+                                      int        transparency_percent)
+{
+  KgxPalette *base_palette;
+  GdkRGBA foreground, background;
+  const GdkRGBA *colours;
+  size_t n_colours;
+  double transparency_ratio;
+
+  g_return_val_if_fail (self != NULL, NULL);
+  g_return_val_if_fail (transparency_percent >= 0 && transparency_percent <= 100, NULL);
+
+  if (transparency_percent == 0) {
+    if (is_day && self->day) {
+      return maybe_as_opaque (self->day, &self->day_opaque, FALSE);
+    } else {
+      return maybe_as_opaque (self->night, &self->night_opaque, FALSE);
+    }
+  }
+
+  base_palette = (is_day && self->day) ? self->day : self->night;
+  if (!base_palette) {
+    return NULL;
+  }
+
+  kgx_palette_get_colours (base_palette, &foreground, &background, &n_colours, &colours);
+
+  transparency_ratio = transparency_percent / 100.0;
+
+  return kgx_palette_new (&foreground, &background, transparency_ratio, n_colours, colours);
+}

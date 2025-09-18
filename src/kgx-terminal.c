@@ -541,9 +541,9 @@ static KgxPalette *
 resolve_livery (KgxTerminal *self,
                 KgxLivery   *livery,
                 gboolean     is_day,
-                gboolean     translucency)
+                int          transparency_percent)
 {
-  return kgx_livery_resolve (livery, is_day, translucency);
+  return kgx_livery_resolve_with_transparency (livery, is_day, transparency_percent);
 }
 
 

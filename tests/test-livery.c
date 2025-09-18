@@ -96,6 +96,39 @@ test_livery_roundtrip (void)
 }
 
 
+static void
+test_livery_transparency (void)
+{
+  g_autoptr (KgxPalette) base_palette = NULL;
+  g_autoptr (KgxLivery) livery = NULL;
+  g_autoptr (KgxPalette) palette_0 = NULL;
+  g_autoptr (KgxPalette) palette_50 = NULL;
+  g_autoptr (KgxPalette) palette_100 = NULL;
+  GdkRGBA fg_in = {.alpha = 1.0}, bg_in = {.alpha = 1.0};
+  GdkRGBA colours_in[] = { {.alpha = 1.0}, };
+  size_t n_colours_in = G_N_ELEMENTS (colours_in);
+
+  base_palette = kgx_palette_new (&fg_in,
+                                  &bg_in,
+                                  0.5, // base transparency of 50%
+                                  n_colours_in,
+                                  colours_in);
+  livery = kgx_livery_new (KGX_LIVERY_UUID_KGX, "Test", base_palette, NULL);
+
+  // Test 0% transparency (opaque)
+  palette_0 = kgx_livery_resolve_with_transparency (livery, FALSE, 0);
+  g_assert_cmpfloat (kgx_palette_get_transparency (palette_0), ==, 0.0);
+
+  // Test 50% transparency
+  palette_50 = kgx_livery_resolve_with_transparency (livery, FALSE, 50);
+  g_assert_cmpfloat (kgx_palette_get_transparency (palette_50), ==, 0.5);
+
+  // Test 100% transparency
+  palette_100 = kgx_livery_resolve_with_transparency (livery, FALSE, 100);
+  g_assert_cmpfloat (kgx_palette_get_transparency (palette_100), ==, 1.0);
+}
+
+
 int
 main (int argc, char *argv[])
 {
@@ -104,6 +137,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/kgx/livery/type", test_livery_type);
   g_test_add_func ("/kgx/livery/new", test_livery_new);
   g_test_add_func ("/kgx/livery/roundtrip", test_livery_roundtrip);
+  g_test_add_func ("/kgx/livery/transparency", test_livery_transparency);
 
   return g_test_run ();
 }

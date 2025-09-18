@@ -52,7 +52,7 @@ struct _KgxSettings {
   gboolean              ignore_scrollback_limit;
   gboolean              software_flow_control;
   KgxLivery            *livery;
-  gboolean              transparency;
+  int                   transparency;
 
   KgxLiveryManager     *livery_manager;
 
@@ -184,10 +184,10 @@ kgx_settings_set_property (GObject      *object,
                             value);
       break;
     case PROP_TRANSPARENCY:
-      kgx_set_boolean_prop (object,
-                            pspec,
-                            &self->transparency,
-                            value);
+      kgx_set_int_prop (object,
+                        pspec,
+                        &self->transparency,
+                        value);
       break;
     case PROP_LIVERY:
       if (kgx_set_livery (&self->livery, g_value_get_boxed (value))) {
@@ -253,7 +253,7 @@ kgx_settings_get_property (GObject    *object,
       g_value_set_boxed (value, kgx_settings_get_livery (self));
       break;
     case PROP_TRANSPARENCY:
-      g_value_set_boolean (value, self->transparency);
+      g_value_set_int (value, self->transparency);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -358,9 +358,9 @@ kgx_settings_class_init (KgxSettingsClass *klass)
                         G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
   pspecs[PROP_TRANSPARENCY] =
-    g_param_spec_boolean ("transparency", NULL, NULL,
-                          FALSE,
-                          G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+    g_param_spec_int ("transparency", NULL, NULL,
+                      0, 100, 0,
+                      G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
   g_object_class_install_properties (object_class, LAST_PROP, pspecs);
 }
@@ -797,6 +797,15 @@ kgx_settings_get_software_flow_control (KgxSettings *self)
   g_return_val_if_fail (KGX_IS_SETTINGS (self), FALSE);
 
   return self->software_flow_control;
+}
+
+
+int
+kgx_settings_get_transparency (KgxSettings *self)
+{
+  g_return_val_if_fail (KGX_IS_SETTINGS (self), 0);
+
+  return self->transparency;
 }
 
 

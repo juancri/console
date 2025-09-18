@@ -1,4 +1,4 @@
-project('gnome-console', 'c',
+project('gnome-console-jc', 'c',
                   version: '48.0.1',
             meson_version: '>= 0.59.0',
                   license: 'GPL-3.0-or-later',
@@ -36,10 +36,11 @@ if get_option('devel')
   log_domain = 'KgxDevel'
   package_version = meson.project_version() + '-@VCS_TAG@'
 else
-  app_id = 'org.gnome.Console'
-  app_path = '/org/gnome/Console/'
-  bin_name = 'kgx'
-  log_domain = 'Kgx'
+  # Custom JC version to avoid conflicts with stock GNOME Console
+  app_id = 'org.gnome.Console.JC'
+  app_path = '/org/gnome/Console/JC/'
+  bin_name = 'kgx-jc'
+  log_domain = 'KgxJC'
   package_version = meson.project_version()
 endif
 

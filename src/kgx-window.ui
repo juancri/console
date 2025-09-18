@@ -47,7 +47,7 @@
       </closure>
     </binding>
     <binding name="translucent">
-      <closure type='gboolean' function='and'>
+      <closure type='gboolean' function='transparency_and_floating'>
         <lookup name="transparency">
           <lookup name="settings">KgxWindow</lookup>
         </lookup>

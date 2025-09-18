@@ -60,6 +60,9 @@ void           kgx_livery_export_to_finish   (KgxLivery            *self,
 KgxPalette    *kgx_livery_resolve            (KgxLivery            *self,
                                               gboolean              is_day,
                                               gboolean              translucency);
+KgxPalette    *kgx_livery_resolve_with_transparency (KgxLivery       *self,
+                                                     gboolean         is_day,
+                                                     int              transparency_percent);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC (KgxLivery, kgx_livery_unref)
 

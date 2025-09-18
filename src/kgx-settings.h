@@ -95,6 +95,7 @@ PangoFontDescription *kgx_settings_get_custom_font      (KgxSettings           *
 void                  kgx_settings_set_custom_font      (KgxSettings           *self,
                                                          PangoFontDescription  *custom_font);
 gboolean              kgx_settings_get_software_flow_control (KgxSettings      *self);
+int                   kgx_settings_get_transparency          (KgxSettings           *self);
 KgxLivery            *kgx_settings_get_livery                (KgxSettings           *self);
 void                  kgx_settings_set_livery                (KgxSettings           *self,
                                                               KgxLivery             *livery);
