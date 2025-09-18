@@ -110,7 +110,7 @@
             <child>
               <object class="AdwSpinRow" id="transparency">
                 <property name="title" translatable="yes">Background _Transparency</property>
-                <property name="subtitle" translatable="yes">Percentage of background transparency (only works when window is floating)</property>
+                <property name="subtitle" translatable="yes">Percentage of background transparency</property>
                 <property name="use-underline">True</property>
                 <property name="numeric">True</property>
                 <property name="digits">0</property>

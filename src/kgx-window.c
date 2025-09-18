@@ -42,7 +42,7 @@ struct _KgxWindowPrivate {
 
   gboolean              search_enabled;
   gboolean              floating;
-  gboolean              translucent;
+  int                   translucent;
 
   gboolean              close_anyway;
 
@@ -102,11 +102,17 @@ kgx_window_set_property (GObject      *object,
       kgx_set_boolean_prop (object, pspec, &priv->floating, value);
       break;
     case PROP_TRANSLUCENT:
-      if (kgx_set_boolean_prop (object, pspec, &priv->translucent, value)) {
-        if (priv->translucent) {
-          gtk_widget_add_css_class (GTK_WIDGET (self), "translucent");
-        } else {
-          gtk_widget_remove_css_class (GTK_WIDGET (self), "translucent");
+      {
+        int transparency = g_value_get_int (value);
+
+        if (priv->translucent != transparency) {
+          priv->translucent = transparency;
+          if (priv->translucent > 0) {
+            gtk_widget_add_css_class (GTK_WIDGET (self), "translucent");
+          } else {
+            gtk_widget_remove_css_class (GTK_WIDGET (self), "translucent");
+          }
+          g_object_notify_by_pspec (object, pspec);
         }
       }
       break;
@@ -137,7 +143,7 @@ kgx_window_get_property (GObject    *object,
       g_value_set_boolean (value, priv->floating);
       break;
     case PROP_TRANSLUCENT:
-      g_value_set_boolean (value, priv->translucent);
+      g_value_set_int (value, priv->translucent);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -235,11 +241,6 @@ and (KgxWindow *self, gboolean a, gboolean b)
 }
 
 
-static gboolean
-transparency_and_floating (KgxWindow *self, int transparency, gboolean floating)
-{
-  return transparency > 0 && floating;
-}
 
 
 static void
@@ -638,9 +639,9 @@ kgx_window_class_init (KgxWindowClass *klass)
                           G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   pspecs[PROP_TRANSLUCENT] =
-    g_param_spec_boolean ("translucent", NULL, NULL,
-                          FALSE,
-                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+    g_param_spec_int ("translucent", NULL, NULL,
+                      0, 100, 0,
+                      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 
   g_object_class_install_properties (object_class, LAST_PROP, pspecs);
 
@@ -662,7 +663,6 @@ kgx_window_class_init (KgxWindowClass *klass)
   gtk_widget_class_bind_template_child_private (widget_class, KgxWindow, surface_binds);
 
   gtk_widget_class_bind_template_callback (widget_class, and);
-  gtk_widget_class_bind_template_callback (widget_class, transparency_and_floating);
   gtk_widget_class_bind_template_callback (widget_class, zoom);
   gtk_widget_class_bind_template_callback (widget_class, create_tearoff_host);
   gtk_widget_class_bind_template_callback (widget_class, maybe_close_window);

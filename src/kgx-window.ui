@@ -47,12 +47,9 @@
       </closure>
     </binding>
     <binding name="translucent">
-      <closure type='gboolean' function='transparency_and_floating'>
-        <lookup name="transparency">
-          <lookup name="settings">KgxWindow</lookup>
-        </lookup>
-        <lookup name="floating">KgxWindow</lookup>
-      </closure>
+      <lookup name="transparency">
+        <lookup name="settings">KgxWindow</lookup>
+      </lookup>
     </binding>
     <property name="width-request">360</property>
     <property name="height-request">294</property>
