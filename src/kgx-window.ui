@@ -58,6 +58,14 @@
         <lookup name="settings">KgxWindow</lookup>
       </lookup>
     </binding>
+    <binding name="blurred">
+      <closure type='gboolean' function='kgx_bool_and'>
+        <lookup name="translucent">KgxWindow</lookup>
+        <lookup name="background-blur">
+          <lookup name="settings">KgxWindow</lookup>
+        </lookup>
+      </closure>
+    </binding>
     <signal name="notify::fullscreened" handler="fullscreened_changed" swapped="yes" />
     <property name="width-request">360</property>
     <property name="height-request">294</property>

@@ -56,6 +56,7 @@ struct _KgxSettings {
   KgxLivery            *livery;
   gboolean              transparency;
   int                   transparency_level;
+  gboolean              background_blur;
   gboolean              always_stop_train;
 
   KgxLiveryManager     *livery_manager;
@@ -87,6 +88,7 @@ enum {
   PROP_LIVERY,
   PROP_TRANSPARENCY,
   PROP_TRANSPARENCY_LEVEL,
+  PROP_BACKGROUND_BLUR,
   PROP_ALWAYS_STOP_TRAIN,
   LAST_PROP,
 };
@@ -205,6 +207,12 @@ kgx_settings_set_property (GObject      *object,
                         &self->transparency_level,
                         value);
       break;
+    case PROP_BACKGROUND_BLUR:
+      kgx_set_boolean_prop (object,
+                            pspec,
+                            &self->background_blur,
+                            value);
+      break;
     case PROP_LIVERY:
       kgx_settings_set_livery (self, g_value_get_boxed (value));
       break;
@@ -275,6 +283,9 @@ kgx_settings_get_property (GObject    *object,
       break;
     case PROP_TRANSPARENCY_LEVEL:
       g_value_set_int (value, self->transparency_level);
+      break;
+    case PROP_BACKGROUND_BLUR:
+      g_value_set_boolean (value, self->background_blur);
       break;
     case PROP_ALWAYS_STOP_TRAIN:
       g_value_set_boolean (value, self->always_stop_train);
@@ -411,6 +422,11 @@ kgx_settings_class_init (KgxSettingsClass *klass)
     g_param_spec_int ("transparency-level", NULL, NULL,
                       0, 100, 0,
                       G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
+
+  pspecs[PROP_BACKGROUND_BLUR] =
+    g_param_spec_boolean ("background-blur", NULL, NULL,
+                          TRUE,
+                          G_PARAM_READWRITE | G_PARAM_EXPLICIT_NOTIFY | G_PARAM_STATIC_STRINGS);
 
   pspecs[PROP_ALWAYS_STOP_TRAIN] =
     g_param_spec_boolean ("always-stop-train", NULL, NULL,
@@ -597,6 +613,9 @@ kgx_settings_init (KgxSettings *self)
                    G_SETTINGS_BIND_DEFAULT);
   g_settings_bind (self->settings, "transparency-level",
                    self, "transparency-level",
+                   G_SETTINGS_BIND_DEFAULT);
+  g_settings_bind (self->settings, "background-blur",
+                   self, "background-blur",
                    G_SETTINGS_BIND_DEFAULT);
   g_settings_bind_with_mapping (self->settings, "custom-liveries",
                                 self->livery_manager, "custom-liveries",

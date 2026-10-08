@@ -47,6 +47,7 @@ struct _KgxWindowPrivate {
   gboolean              search_enabled;
   gboolean              floating;
   gboolean              translucent;
+  gboolean              blurred;
 
   gboolean              close_anyway;
 
@@ -69,6 +70,7 @@ enum {
   PROP_SEARCH_MODE_ENABLED,
   PROP_FLOATING,
   PROP_TRANSLUCENT,
+  PROP_BLURRED,
   LAST_PROP
 };
 static GParamSpec *pspecs[LAST_PROP] = { NULL, };
@@ -116,6 +118,15 @@ kgx_window_set_property (GObject      *object,
         }
       }
       break;
+    case PROP_BLURRED:
+      if (kgx_set_boolean_prop (object, pspec, &priv->blurred, value)) {
+        if (priv->blurred) {
+          gtk_widget_add_css_class (GTK_WIDGET (self), "blurred");
+        } else {
+          gtk_widget_remove_css_class (GTK_WIDGET (self), "blurred");
+        }
+      }
+      break;
     KGX_INVALID_PROP (object, property_id, pspec);
   }
 }
@@ -142,6 +153,9 @@ kgx_window_get_property (GObject    *object,
       break;
     case PROP_TRANSLUCENT:
       g_value_set_boolean (value, priv->translucent);
+      break;
+    case PROP_BLURRED:
+      g_value_set_boolean (value, priv->blurred);
       break;
     KGX_INVALID_PROP (object, property_id, pspec);
   }
@@ -544,6 +558,11 @@ kgx_window_class_init (KgxWindowClass *klass)
 
   pspecs[PROP_TRANSLUCENT] =
     g_param_spec_boolean ("translucent", NULL, NULL,
+                          FALSE,
+                          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
+
+  pspecs[PROP_BLURRED] =
+    g_param_spec_boolean ("blurred", NULL, NULL,
                           FALSE,
                           G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS | G_PARAM_EXPLICIT_NOTIFY);
 

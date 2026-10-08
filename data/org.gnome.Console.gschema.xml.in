@@ -60,6 +60,10 @@
       <default>0</default>
       <summary>Background transparency percentage, 0 uses the livery’s own</summary>
     </key>
+    <key name="background-blur" type="b">
+      <default>true</default>
+      <summary>Ask the compositor to blur what is behind translucent windows</summary>
+    </key>
     <key name="livery" type="s">
       <default>@KGX_LIVERY_UUID_KGX@</default>
     </key>

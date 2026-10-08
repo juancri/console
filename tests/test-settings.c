@@ -744,6 +744,28 @@ test_settings_transparency_level (Fixture *fixture, gconstpointer unused)
 
 
 static void
+test_settings_background_blur (Fixture *fixture, gconstpointer unused)
+{
+  g_autoptr (KgxSettings) settings = g_object_new (KGX_TYPE_SETTINGS, NULL);
+  gboolean result = FALSE;
+
+  g_object_get (settings, "background-blur", &result, NULL);
+  g_assert_true (result);
+
+  g_settings_set_boolean (fixture->settings, "background-blur", FALSE);
+
+  g_object_get (settings, "background-blur", &result, NULL);
+  g_assert_false (result);
+
+  kgx_test_property_notify (settings, "background-blur", TRUE, FALSE);
+
+  g_object_get (settings, "background-blur", &result, NULL);
+  g_assert_false (result);
+  g_assert_false (g_settings_get_boolean (fixture->settings, "background-blur"));
+}
+
+
+static void
 test_settings_always_stop_train (Fixture *fixture, gconstpointer unused)
 {
   g_autoptr (KgxSettings) settings = g_object_new (KGX_TYPE_SETTINGS, NULL);
@@ -825,6 +847,9 @@ main (int argc, char *argv[])
   fixtured_test ("/kgx/settings/transparency-level",
                  NULL,
                  test_settings_transparency_level);
+  fixtured_test ("/kgx/settings/background-blur",
+                 NULL,
+                 test_settings_background_blur);
   fixtured_test ("/kgx/settings/always-stop-train",
                  NULL,
                  test_settings_always_stop_train);

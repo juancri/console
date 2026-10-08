@@ -188,6 +188,75 @@ test_window_translucent_direct (void)
 
 
 static void
+test_window_blurred_direct (void)
+{
+  g_autoptr (KgxWindow) window =
+    g_object_ref (g_object_new (KGX_TYPE_WINDOW, NULL));
+  gboolean blurred;
+
+  g_object_get (window, "blurred", &blurred, NULL);
+  g_assert_false (blurred);
+  g_assert_false (gtk_widget_has_css_class (GTK_WIDGET (window), "blurred"));
+
+  kgx_test_property_notify (window, "blurred", TRUE, FALSE);
+  g_assert_false (gtk_widget_has_css_class (GTK_WIDGET (window), "blurred"));
+
+  g_object_set (window, "blurred", TRUE, NULL);
+  g_assert_true (gtk_widget_has_css_class (GTK_WIDGET (window), "blurred"));
+
+  gtk_window_destroy (GTK_WINDOW (window));
+}
+
+
+static void
+test_window_blurred_derived (void)
+{
+  g_autoptr (KgxSettings) settings = g_object_new (KGX_TYPE_SETTINGS, NULL);
+  g_autoptr (KgxWindow) window =
+    g_object_ref (g_object_new (KGX_TYPE_WINDOW, "settings", settings, NULL));
+  gboolean blurred;
+
+  g_object_set (settings, "background-blur", TRUE, NULL);
+
+  /* Opaque, so nothing to blur */
+  g_object_get (window, "blurred", &blurred, NULL);
+  g_assert_false (blurred);
+  g_assert_false (gtk_widget_has_css_class (GTK_WIDGET (window), "blurred"));
+
+  /* Translucent with blur enabled */
+  kgx_expect_property_notify (window, "blurred");
+  g_object_set (settings, "transparency", TRUE, NULL);
+  kgx_assert_expected_notifies (window);
+
+  g_object_get (window, "blurred", &blurred, NULL);
+  g_assert_true (blurred);
+  g_assert_true (gtk_widget_has_css_class (GTK_WIDGET (window), "blurred"));
+
+  /* Blur disabled, still translucent */
+  kgx_expect_property_notify (window, "blurred");
+  g_object_set (settings, "background-blur", FALSE, NULL);
+  kgx_assert_expected_notifies (window);
+
+  g_object_get (window, "blurred", &blurred, NULL);
+  g_assert_false (blurred);
+  g_assert_false (gtk_widget_has_css_class (GTK_WIDGET (window), "blurred"));
+  g_assert_true (gtk_widget_has_css_class (GTK_WIDGET (window), "translucent"));
+
+  /* Blur back on, then opaque again */
+  g_object_set (settings, "background-blur", TRUE, NULL);
+  g_assert_true (gtk_widget_has_css_class (GTK_WIDGET (window), "blurred"));
+
+  kgx_expect_property_notify (window, "blurred");
+  g_object_set (settings, "transparency", FALSE, NULL);
+  kgx_assert_expected_notifies (window);
+
+  g_assert_false (gtk_widget_has_css_class (GTK_WIDGET (window), "blurred"));
+
+  gtk_window_destroy (GTK_WINDOW (window));
+}
+
+
+static void
 test_window_translucent_derived (void)
 {
   g_autoptr (KgxSettings) settings = g_object_new (KGX_TYPE_SETTINGS, NULL);
@@ -577,6 +646,8 @@ main (int argc, char *argv[])
   g_test_add_func ("/kgx/window/floating", test_window_floating);
   g_test_add_func ("/kgx/window/translucent/direct", test_window_translucent_direct);
   g_test_add_func ("/kgx/window/translucent/derived", test_window_translucent_derived);
+  g_test_add_func ("/kgx/window/blurred/direct", test_window_blurred_direct);
+  g_test_add_func ("/kgx/window/blurred/derived", test_window_blurred_derived);
   g_test_add_func ("/kgx/window/realize-unrealize", test_window_realize_unrealize);
   g_test_add_func ("/kgx/window/trigger-breakpoints/empty", test_window_trigger_breakpoints_empty);
   g_test_add_func ("/kgx/window/trigger-breakpoints/with-tab", test_window_trigger_breakpoints_with_tab);
