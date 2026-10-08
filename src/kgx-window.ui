@@ -52,13 +52,11 @@
         <constant type="gchararray" translatable="yes">Console</constant>
       </closure>
     </binding>
+    <!-- Unlike upstream, stay translucent when maximised/tiled too -->
     <binding name="translucent">
-      <closure type='gboolean' function='kgx_bool_and'>
-        <lookup name="transparency">
-          <lookup name="settings">KgxWindow</lookup>
-        </lookup>
-        <lookup name="floating">KgxWindow</lookup>
-      </closure>
+      <lookup name="transparency">
+        <lookup name="settings">KgxWindow</lookup>
+      </lookup>
     </binding>
     <signal name="notify::fullscreened" handler="fullscreened_changed" swapped="yes" />
     <property name="width-request">360</property>

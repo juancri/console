@@ -226,22 +226,22 @@ test_window_translucent_derived (void)
   g_assert_true (translucent);
   g_assert_true (gtk_widget_has_css_class (GTK_WIDGET (window), "translucent"));
 
-  /* Maximised windows are opaque */
-  kgx_expect_property_notify (window, "translucent");
+  /* Maximised windows stay translucent */
+  kgx_expect_property_not_notify (window, "translucent");
   gtk_window_maximize (GTK_WINDOW (window));
   kgx_test_flush_widget (GTK_WIDGET (window));
   g_assert_true (gtk_window_is_maximized (GTK_WINDOW (window)));
   kgx_assert_expected_notifies (window);
 
   g_object_get (window, "translucent", &translucent, NULL);
-  g_assert_false (translucent);
-  g_assert_false (gtk_widget_has_css_class (GTK_WIDGET (window), "translucent"));
+  g_assert_true (translucent);
+  g_assert_true (gtk_widget_has_css_class (GTK_WIDGET (window), "translucent"));
 
   /* Let the display catch up a moment */
   kgx_test_flush_widget (GTK_WIDGET (window));
 
-  /* Back to floating, so translucent */
-  kgx_expect_property_notify (window, "translucent");
+  /* Back to floating, still translucent */
+  kgx_expect_property_not_notify (window, "translucent");
   gtk_window_unmaximize (GTK_WINDOW (window));
   kgx_test_flush_widget (GTK_WIDGET (window));
   g_assert_false (gtk_window_is_maximized (GTK_WINDOW (window)));
