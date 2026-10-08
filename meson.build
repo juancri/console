@@ -1,5 +1,5 @@
 project(
-  'gnome-console',
+  'gnome-console-jc',
   'c',
   version: '51.0',
   meson_version: '>= 1.5.0',
@@ -38,10 +38,11 @@ if get_option('devel')
   bin_name = 'kgx-devel'
   log_domain = 'KgxDevel'
 else
-  app_id = 'org.gnome.Console'
-  app_path = '/org/gnome/Console/'
-  bin_name = 'kgx'
-  log_domain = 'Kgx'
+  # Custom JC version to avoid conflicts with stock GNOME Console
+  app_id = 'org.gnome.Console.JC'
+  app_path = '/org/gnome/Console/JC/'
+  bin_name = 'kgx-jc'
+  log_domain = 'KgxJC'
 endif
 
 kgx_homepage_url = 'https://apps.gnome.org/Console/'
