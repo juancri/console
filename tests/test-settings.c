@@ -725,6 +725,25 @@ test_settings_transparency (Fixture *fixture, gconstpointer unused)
 
 
 static void
+test_settings_transparency_level (Fixture *fixture, gconstpointer unused)
+{
+  g_autoptr (KgxSettings) settings = g_object_new (KGX_TYPE_SETTINGS, NULL);
+  int result = 0;
+
+  g_settings_set_int (fixture->settings, "transparency-level", 50);
+
+  g_object_get (settings, "transparency-level", &result, NULL);
+  g_assert_cmpint (result, ==, 50);
+
+  kgx_test_property_notify (settings, "transparency-level", 25, 75);
+
+  g_object_get (settings, "transparency-level", &result, NULL);
+  g_assert_cmpint (result, ==, 75);
+  g_assert_cmpint (g_settings_get_int (fixture->settings, "transparency-level"), ==, 75);
+}
+
+
+static void
 test_settings_always_stop_train (Fixture *fixture, gconstpointer unused)
 {
   g_autoptr (KgxSettings) settings = g_object_new (KGX_TYPE_SETTINGS, NULL);
@@ -803,6 +822,9 @@ main (int argc, char *argv[])
 
   fixtured_test ("/kgx/settings/software-flow-control", NULL, test_settings_software_flow_control);
   fixtured_test ("/kgx/settings/transparency", NULL, test_settings_transparency);
+  fixtured_test ("/kgx/settings/transparency-level",
+                 NULL,
+                 test_settings_transparency_level);
   fixtured_test ("/kgx/settings/always-stop-train",
                  NULL,
                  test_settings_always_stop_train);

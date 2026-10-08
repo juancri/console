@@ -405,6 +405,38 @@ kgx_palette_as_opaque (KgxPalette *self)
 }
 
 
+/**
+ * kgx_palette_with_transparency:
+ * @self: a #KgxPalette
+ * @transparency: the background transparency, from 0.0 to 1.0
+ *
+ * Returns: (transfer full): a new #KgxPalette with the background
+ * transparency replaced, or @self if it already matched
+ */
+KgxPalette *
+kgx_palette_with_transparency (KgxPalette *self,
+                               double      transparency)
+{
+  KgxPalette *modified;
+  size_t colours_size;
+  double alpha;
+
+  g_return_val_if_fail (self != NULL, NULL);
+
+  alpha = TRANS_AS_ALPHA (transparency);
+
+  if (G_APPROX_VALUE (self->background.alpha, alpha, FLT_EPSILON)) {
+    return kgx_palette_ref (self);
+  }
+
+  colours_size = sizeof (GdkRGBA) * self->n_colours;
+  modified = g_rc_box_dup (sizeof (KgxPalette) + colours_size, self);
+  modified->background.alpha = alpha;
+
+  return modified;
+}
+
+
 double
 kgx_palette_get_transparency (KgxPalette *self)
 {

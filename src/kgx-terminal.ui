@@ -96,6 +96,9 @@
         <lookup name="translucent" type="KgxWindow">
           <lookup name="root">KgxTerminal</lookup>
         </lookup>
+        <lookup name="transparency-level">
+          <lookup name="settings">KgxTerminal</lookup>
+        </lookup>
       </closure>
     </binding>
     <signal name="termprop-changed::vte.cwf" handler="location_changed" />

@@ -727,9 +727,17 @@ static KgxPalette *
 resolve_livery (KgxTerminal *self,
                 KgxLivery   *livery,
                 gboolean     is_day,
-                gboolean     translucency)
+                gboolean     translucency,
+                int          transparency_level)
 {
-  return kgx_livery_resolve (livery, is_day, translucency);
+  g_autoptr (KgxPalette) palette =
+    kgx_livery_resolve (livery, is_day, translucency);
+
+  if (translucency && transparency_level > 0) {
+    return kgx_palette_with_transparency (palette, transparency_level / 100.0);
+  }
+
+  return g_steal_pointer (&palette);
 }
 
 

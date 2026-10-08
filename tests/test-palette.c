@@ -82,6 +82,35 @@ test_palette_opaque (void)
 
 
 static void
+test_palette_with_transparency (void)
+{
+  GdkRGBA colours_in[] = { { .red = 0.2, .green = 0.4, .blue = 0.6, .alpha = 1.0 }, };
+  g_autoptr (KgxPalette) palette = kgx_palette_new (&((GdkRGBA) { 0, }),
+                                                    &((GdkRGBA) { 0, }),
+                                                    0.04,
+                                                    G_N_ELEMENTS (colours_in),
+                                                    colours_in);
+  g_autoptr (KgxPalette) half_palette = NULL;
+  g_autoptr (KgxPalette) same_palette = NULL;
+  GdkRGBA foreground, background;
+  const GdkRGBA *colours;
+  size_t n_colours;
+
+  half_palette = kgx_palette_with_transparency (palette, 0.5);
+  g_assert_true (palette != half_palette);
+  g_assert_cmpfloat_with_epsilon (kgx_palette_get_transparency (half_palette), 0.5, FLT_EPSILON);
+  g_assert_cmpfloat_with_epsilon (kgx_palette_get_transparency (palette), 0.04, FLT_EPSILON);
+
+  kgx_palette_get_colours (half_palette, &foreground, &background, &n_colours, &colours);
+  g_assert_cmpuint (n_colours, ==, G_N_ELEMENTS (colours_in));
+  g_assert_true (gdk_rgba_equal (&colours[0], &colours_in[0]));
+
+  same_palette = kgx_palette_with_transparency (half_palette, 0.5);
+  g_assert_true (half_palette == same_palette);
+}
+
+
+static void
 assert_colour (const GdkRGBA *a, const GdkRGBA *b)
 {
   g_assert_cmpfloat_with_epsilon (a->red, b->red, 0.0095);
@@ -277,6 +306,7 @@ main (int argc, char *argv[])
   g_test_add_func ("/kgx/palette/new", test_palette_new);
   g_test_add_func ("/kgx/palette/transparency", test_palette_transparency);
   g_test_add_func ("/kgx/palette/opaque", test_palette_opaque);
+  g_test_add_func ("/kgx/palette/with_transparency", test_palette_with_transparency);
   g_test_add_func ("/kgx/palette/colours", test_palette_colours);
   g_test_add_func ("/kgx/palette/serialise", test_palette_serialise);
   g_test_add_func ("/kgx/palette/serialise_validate", test_palette_serialise_validate);
